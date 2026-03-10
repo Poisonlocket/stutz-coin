@@ -3,7 +3,7 @@ package models
 type Block struct {
 	Index     int
 	Timestamp string
-	BPM       int
+	Content   string
 	Hash      string
 	PrevHash  string
 }

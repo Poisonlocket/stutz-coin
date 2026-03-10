@@ -8,26 +8,27 @@ import (
 )
 
 func calculateHash(block models.Block) string {
-	record := string(rune(block.Index)) + block.Timestamp + string(rune(block.BPM)) + block.PrevHash
+	record := string(rune(block.Index)) + block.Timestamp + block.Content + block.PrevHash
 	h := sha256.New()
 	h.Write([]byte(record))
 	hashed := h.Sum(nil)
 	return hex.EncodeToString(hashed)
 }
 
-func generateBlock(oldBlock models.Block, BPM int) models.Block {
+func GenerateBlock(oldBlock models.Block, Content string) (models.Block, error) {
+
 	var newBlock models.Block
 	t := time.Now()
 
 	newBlock.Index = oldBlock.Index + 1
 	newBlock.Timestamp = t.String()
-	newBlock.BPM = BPM
+	newBlock.Content = Content
 	newBlock.PrevHash = oldBlock.Hash
 	newBlock.Hash = calculateHash(newBlock)
-	return newBlock
+	return newBlock, nil
 }
 
-func validateBlock(newBlock, oldBlock models.Block) bool {
+func ValidateBlock(newBlock, oldBlock models.Block) bool {
 	if oldBlock.Index+1 != newBlock.Index {
 		return false
 	}
@@ -40,7 +41,7 @@ func validateBlock(newBlock, oldBlock models.Block) bool {
 	return true
 }
 
-func replaceChain(newChain, currChain []models.Block) []models.Block {
+func ReplaceChain(newChain, currChain []models.Block) []models.Block {
 	if len(currChain) < len(newChain) {
 		return newChain
 	}
